@@ -1,0 +1,254 @@
+<!DOCTYPE html>
+<html lang="uk">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>AppleWise - reduce waste, store smarter</title>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css">
+    <link rel="icon" href="/static/icon.png" type="image/x-icon">
+    <style>
+        * {
+            box-sizing: border-box;
+            font-family: 'Arial', sans-serif;
+        }
+
+        body {
+            background: #f0f7eb;
+            margin: 0;
+            padding: 20px;
+        }
+
+        .container {
+            max-width: 800px;
+            margin: 0 auto;
+            background: #fff;
+            padding: 30px;
+            border-radius: 15px;
+            box-shadow: 0 0 20px rgba(46, 204, 113, 0.1);
+        }
+
+        h1 {
+            color: #2ecc71;
+            text-align: center;
+            font-size: 2.5em;
+            margin-bottom: 30px;
+            text-shadow: 1px 1px 2px rgba(0,0,0,0.1);
+        }
+
+        .apple-icon {
+            color: #27ae60;
+            margin-right: 10px;
+        }
+
+        .form-group {
+            margin-bottom: 20px;
+        }
+
+        label {
+            display: block;
+            margin-bottom: 8px;
+            color: #2c3e50;
+            font-weight: bold;
+        }
+
+        input, select {
+            width: 100%;
+            padding: 12px;
+            border: 2px solid #27ae60;
+            border-radius: 8px;
+            font-size: 16px;
+            background: #f9fcf7;
+        }
+
+        button {
+            background: #27ae60;
+            color: white;
+            padding: 15px 30px;
+            border: none;
+            border-radius: 8px;
+            cursor: pointer;
+            font-size: 18px;
+            transition: all 0.3s;
+            display: block;
+            margin: 20px auto;
+            box-shadow: 0 4px 6px rgba(39, 174, 96, 0.2);
+        }
+
+        button:hover {
+            background: #229954;
+            transform: translateY(-2px);
+        }
+
+        .result-section {
+            display: none;
+            margin-top: 30px;
+            padding: 20px;
+            background: #f5fbf2;
+            border-radius: 10px;
+            border-left: 5px solid #27ae60;
+        }
+
+        .storage-time {
+            color: #229954;
+            font-size: 24px;
+            font-weight: bold;
+            text-align: center;
+            margin: 15px 0;
+        }
+
+        .ai-section {
+            background: white;
+            padding: 15px;
+            border-radius: 8px;
+            margin-top: 15px;
+            border: 1px solid #d5f5e3;
+        }
+
+        .theme-element {
+            background: linear-gradient(45deg, #27ae60, #229954);
+            color: white;
+            padding: 5px 10px;
+            border-radius: 5px;
+        }
+
+        .grid-container {
+            display: grid;
+            grid-template-columns: repeat(2, 1fr);
+            gap: 20px;
+        }
+
+        #geminiResponse {
+            white-space: pre-wrap;
+            line-height: 1.6;
+            padding: 15px;
+            background: #f8fdfa;
+            border-radius: 8px;
+            margin-top: 10px;
+        }
+
+        .gemini-icon {
+            color: #229954;
+            font-size: 1.2em;
+        }
+
+        @media (max-width: 600px) {
+            .grid-container {
+                grid-template-columns: 1fr;
+            }
+
+            h1 {
+                font-size: 2em;
+            }
+        }
+
+        .duration-center{
+            grid-column: 1 / -1;
+            display:flex;
+            flex-direction:column;
+            align-items:center;
+        }
+
+        .duration-center input{
+            max-width:260px;
+            width:100%;
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <h1><i class="fas fa-leaf apple-icon"></i>AppleWise</h1>
+
+        <form id="storageForm">
+            <div class="grid-container">
+                <div class="form-group">
+                    <label><i class="fas fa-apple-alt theme-element"></i> Apple variety</label>
+                    <select id="variety" required>
+                      <option value="">Choose a variety of apples</option>
+                      <option value="golden">Golden</option>
+                      <option value="gala">Gala</option>
+                      <option value="fuji">Fudzi</option>
+                      <option value="aidared">Aidared</option>
+                      <option value="jonagold">Jonagold</option>
+                    </select>
+                </div>
+
+                <div class="form-group">
+                    <label><i class="fas fa-box theme-element"></i> Type of packaging</label>
+                    <select id="package" required>
+                      <option value="">Choose a package</option>
+                      <option value="wood">Wooden boxes</option>
+                      <option value="cardboard">Cardboard boxes</option>
+                      <option value="plastic">Plastic containers</option>
+                    </select>
+                </div>
+
+                <div class="form-group">
+                    <label><i class="fas fa-thermometer-half theme-element"></i> Temperature (°C)</label>
+                    <input type="number" id="temperature" required>
+                </div>
+
+                <div class="form-group">
+                    <label><i class="fas fa-tint theme-element"></i> Humidity (%)</label>
+                    <input type="number" id="humidity" required>
+                </div>
+
+                <div class="form-group duration-center">
+                    <label><i class="fas fa-box theme-element"></i> Storage Duration (days)</label>
+                    <input type="number" id="duration" required>
+                </div>
+            </div>
+
+            <button type="submit"><i class="fas fa-calculator"></i> Calculate</button>
+        </form>
+
+        <div class="result-section" id="resultSection">
+            <div class="storage-time">
+                Percentage of crop losses: <span id="storageTime">...</span>
+            </div>
+
+            <div class="ai-section">
+                <h3><i class="fab fa-google gemini-icon"></i> Advice:</h3>
+                <div id="geminiResponse">Loading...</div>
+            </div>
+        </div>
+    </div>
+
+    <script>
+    document.getElementById("storageForm").addEventListener("submit", function(event) {
+        event.preventDefault();
+
+        var vari = document.getElementById("variety").value;
+        var temp = document.getElementById("temperature").value;
+        var humi = document.getElementById("humidity").value;
+        var box = document.getElementById("package").value;
+        var dur = document.getElementById("duration").value;
+
+        fetch("/calculate", {
+          method: "POST",
+          headers: {
+            "Content-Type": "application/json"
+          },
+          body: JSON.stringify({
+            variety: vari,
+            temperature: temp,
+            humidity: humi,
+            package: box,
+            duration: dur
+          })
+        })
+        .then(response => {
+          if (!response.ok) throw new Error("Network response was not ok");
+          return response.json();
+        })
+        .then(data => {
+          document.getElementById("resultSection").style.display = "block";
+          document.getElementById("storageTime").textContent = data.loss.toFixed(2) + "%";
+          document.getElementById("geminiResponse").textContent = data.recommendations;
+        })
+        .catch(error => {
+          alert(error);
+        });
+      });
+    </script>
+</body>
+</html>
