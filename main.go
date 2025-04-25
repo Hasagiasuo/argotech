@@ -94,14 +94,8 @@ func main() {
       temp,
     ))
     loss := calc_loss(temp, humi, dura / 30, req.Variety, req.Package)
-    var res float64
-    if loss > 100.0 {
-    	res = 100.0
-    } else {
-    	res = loss
-    }
     c.JSON(http.StatusOK, gin.H{
-    	"loss": res,
+    	"loss": min(loss, 100.0),
       "recommendations": recommendations,
     })
   })
